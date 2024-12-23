@@ -20,14 +20,14 @@ It is a text file that contains instructions for building a Docker image. It is 
 
 - **Scripts -** 
   - Open the terminal and navigate to the directory where the Dockerfile is located.
-  - Run the command `docker build -v "<host/folder : docker/folder>" -t <image-name> .` to build the Docker image
+  - Run the command `docker build -t <image-name> .` to build the Docker image
     - **docker build**: This is the command to initiate the image building process
     - **-t <image_name>**: This flag is used to tag the image with a name. This makes it easier to identify and reference the image later.
     - **.** : This indicates that the Dockerfile is located in the current directory.
     
     ``` 
     # Build dockerfile to create a new image
-    docker build -t dbt-learn-hands-on .
+    docker build -t dbt_learn_image .
     ```
   - Run the command `docker run -p <docker_port>:<host_port> -it --rm -v "<host/folder : docker/folder >" --name <container-name> <image-name>` to create and run a new container from the Docker image
   
@@ -42,13 +42,17 @@ It is a text file that contains instructions for building a Docker image. It is 
     ```
     # Run the container from the newly created image and mount the volume with host folder
     # while using WSL (Windows Subsystem for Linux), path should be in the format /mnt/c/path/to/folder
-    # Syntax : docker run -it --rm -p 8080:8080 -v "/mnt/c/path/to/folder:/usr/local/app" --name dbt-learn-hands-on dbt-learn-hands-on
+    # Syntax : docker run -it --rm -p 8080:8080 -v "/mnt/c/path/to/folder:/usr/local/app" --name <container-name> <image-name>
 
     docker run -p 8080:8080 -v /mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech\ Solutions/dbt-learn-hands-on/main/dbt-working-folder:/usr/local/app/dbt-working-folder --name dbt-learn-hands-on dbt_learn_image
     
     ``` 
   - Start the shell of running container in Host machine using the following command
     ```
+    # Get the container name or id by executing
+    docker ps -a
+
+    # Start the shell of running container in Host machine.
     docker exec -it <container_name_or_id> /bin/bash
     ```
     
