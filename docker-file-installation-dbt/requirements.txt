@@ -1,0 +1,5 @@
+dbt-core
+dbt-sqlserver
+pyodbc
+pandas
+virtualenv
