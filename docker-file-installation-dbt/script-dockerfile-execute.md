@@ -19,7 +19,7 @@ It is a text file that contains instructions for building a Docker image. It is 
     - **Volume** - Specify the container path which will be mapped to the host machine path. In this case, the /usr/local/app directory is used.
 
 - **Scripts -** 
-  - Open the terminal and navigate to the directory where the Dockerfile is located.
+  - Open the WSL (Windows Subsystem for Linux)terminal and navigate to the directory where the Dockerfile is located.
   - Run the command `docker build -t <image-name> .` to build the Docker image
     - **docker build**: This is the command to initiate the image building process
     - **-t <image_name>**: This flag is used to tag the image with a name. This makes it easier to identify and reference the image later.
