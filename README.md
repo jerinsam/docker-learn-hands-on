@@ -2,6 +2,10 @@
 ### **DATA ENGINEERING - Learn Essential Docker Commands -**
 Learn Docker, For this tutorial, Docker is installed in Windows WSL (Windows Subsystem for Linex) and it is used to access different docker images using Dockerfile and orchestrated multiple Dockerfiles using Docker compose.
 
+Refer below link to setup docker in WSL - 
+https://gist.github.com/dehsilvadeveloper/c3bdf0f4cdcc5c177e2fe9be671820c7 
+
+
 ### **What is Docker -**
 *Docker is a containerization platform that allows developers to package, ship, and run applications in containers. Containers are lightweight and portable, and they provide a consistent and reliable way to deploy applications. Docker provides a way to create, deploy, and manage containers, and it supports a wide range of programming languages and frameworks.*
 
