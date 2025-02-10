@@ -16,14 +16,14 @@ Docker also provides a way to create custom images using ***Dockerfile***. Docke
 These Dockerfiles can be used in ***Docker Compose*** to create multiple containers, Docker Compose helps to orchestrate multiple containers. It can be used to create a network of containers, and it can be used to manage the lifecycle of containers.
 
 
-### **Following Services are covered -**
+### **Following services are covered -**
 1. Dockerfile 
 2. Docker Compose 
 3. Docker Commands 
 
 
 ### **How to navigate through this Repo -**
-1. Navigate to **`./dockerfile-config-dbt/README.md`**: This will help to understand basics of Dockerfile and how to build/ create image and start the container.
-2. Navigate to **`./dockerfile-docker-compose-config-spark/README.md`**: This will help to understand basics of Dockerfile and Docker Compose and how to orchestrate multi container docker service.
+1. Navigate to **`./dockerfile-config-dbt/README.md`**: This will help to understand basics of Dockerfile and how to build/ create image and start the container and directory **`./dockerfile-config-dbt/`** will contain all the files related to Dockerfile.
+2. Navigate to **`./dockerfile-docker-compose-config-spark/README.md`**: This will help to understand basics of Dockerfile and Docker Compose and how to orchestrate multi container docker service and directory **`./dockerfile-docker-compose-config-spark/`** will contain all the files related to Dockerfile, Docker Compose and necessary Docker Commands.
 3. Navigate to **`./docker-commands.md`**: This will help to understand common docker commands to build and manage the containers.
 
