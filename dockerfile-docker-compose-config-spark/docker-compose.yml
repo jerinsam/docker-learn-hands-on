@@ -1,0 +1,118 @@
+version: '3.9'
+
+services:
+  spark-master:
+    container_name: container-spark-master
+    build: 
+      context: .
+      dockerfile: Dockerfile.spark
+    image: spark-image
+    entrypoint: ['./entrypoint.sh', 'master']
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    volumes:
+      # - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/data:/usr/hive-metastore/data"
+      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/logs:/usr/hive-metastore/logs"
+      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
+      - "spark-logs:/opt/spark/spark-events"
+    env_file:
+      - ./spark-config/.env.spark
+    ports:
+      - '9090:8080' # Ued by the Spark Master Web UI
+      - '7077:7077' # Used by Spark's cluster manager for accepting connections from workers and applications
+      - '8888:8888' # For jupyter lab
+    networks:
+      hivemetastore:
+
+  spark-history-server:
+    container_name: container-spark-history
+    image: spark-image
+    entrypoint: ['./entrypoint.sh', 'history']
+    depends_on:
+      - spark-master
+    env_file:
+      - ./spark-config/.env.spark
+    volumes:
+      - spark-logs:/opt/spark/spark-events
+    ports:
+      - '18080:18080'
+    networks:
+      hivemetastore:
+
+  spark-worker:
+#    container_name: da-spark-worker
+    image: spark-image
+    entrypoint: ['./entrypoint.sh', 'worker']
+    depends_on:
+      - spark-master
+    env_file:
+      - ./spark-config/.env.spark
+    volumes:
+      # - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/data:/usr/hive-metastore/data"
+      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
+      - "spark-logs:/opt/spark/spark-events"
+    networks:
+      hivemetastore:
+
+  minio:
+    container_name: container-minio-storage
+    build: 
+      context: .
+      dockerfile: Dockerfile.minio
+    image: minio_storage  
+    ports:
+      - "9000:9000"
+      - "9001:9001" 
+    volumes:
+      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/data:/usr/hive-metastore/data"
+      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
+      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/logs:/usr/hive-metastore/logs" 
+    networks:
+      hivemetastore:
+  
+  postgresdb:
+    container_name: postgres_container 
+    image: postgres:latest
+    depends_on:
+      - spark-master
+    environment:
+      - POSTGRES_USER=jerin
+      - POSTGRES_PASSWORD=jerinpostgresql
+      - POSTGRES_DB=hivemetastore # Database added in this Environment Variable will be cerated automatically
+    ports:
+      - "5332:5432" # Port to connect to Postgres 
+    # volumes:
+    # #  Adding sql script in /docker-entrypoint-initdb.d/ directory will be automatically executed.
+    # # This is commented, since hive metastore will be created by hive init script mentioned in entrypoint file of hive metastore.
+    #   - ./postgres-hive-script/hive-schema-4.0.0.postgres.sql:/docker-entrypoint-initdb.d/hive-schema-4.0.0.postgres.sql
+    networks:
+      hivemetastore:
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  hive-metastore:
+    container_name: container-hive-metastore
+    build: 
+      context: .
+      dockerfile: Dockerfile.hivemetastore
+    image: hive-metastore-image
+    volumes:
+      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
+      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/logs:/usr/hive-metastore/logs"
+    ports:
+      - '9083:9083' # Hive metastore thrift server port
+    depends_on:
+      - postgresdb
+    networks:
+      hivemetastore:
+
+volumes:
+  spark-logs:
+networks:
+      hivemetastore:

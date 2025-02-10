@@ -1,0 +1,86 @@
+FROM python:3.11.11-bullseye AS spark-base
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      sudo \
+      curl \
+      vim \
+      unzip \
+      rsync \
+      openjdk-11-jdk \
+      build-essential \
+      software-properties-common \
+      ssh && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+## Download spark and hadoop dependencies and install
+
+# Optional env variables
+ENV SPARK_HOME=${SPARK_HOME:-"/opt/spark"}
+ENV HADOOP_HOME=${HADOOP_HOME:-"/opt/hadoop"}
+
+RUN mkdir -p ${HADOOP_HOME} && mkdir -p ${SPARK_HOME}
+WORKDIR ${SPARK_HOME}
+
+# Install spark
+RUN curl https://dlcdn.apache.org/spark/spark-3.5.4/spark-3.5.4-bin-hadoop3.tgz -o spark-3.5.4-bin-hadoop3.tgz \
+ && tar xvzf spark-3.5.4-bin-hadoop3.tgz --directory /opt/spark --strip-components 1 \
+ && rm -rf spark-3.5.4-bin-hadoop3.tgz
+
+
+FROM spark-base AS pyspark
+
+# Install python deps
+COPY ./requirements.txt .
+RUN pip3 install -r requirements.txt
+
+ENV PATH="/opt/spark/sbin:/opt/spark/bin:${PATH}"
+ENV SPARK_HOME="/opt/spark"
+ENV SPARK_MASTER="spark://spark-master:7077"
+ENV SPARK_MASTER_HOST=spark-master
+ENV SPARK_MASTER_PORT=7077
+ENV PYSPARK_DRIVER_PYTHON=jupyter
+ENV PYSPARK_DRIVER_PYTHON_OPTS='lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root'
+
+
+# Copy Spark Defaults
+COPY ./spark-config/spark-defaults.conf "$SPARK_HOME/conf"
+
+
+# Add Hive default configs, Postgres DB as external metastore and Minio as Object Storeage in Hive
+COPY ./spark-config/hive-site.xml "$SPARK_HOME/conf"
+
+
+# Download Postgresql jar to connect postgres which will act as hive external metastore
+RUN curl https://jdbc.postgresql.org/download/postgresql-42.7.5.jar -o /opt/spark/jars/postgresql-42.7.5.jar
+
+RUN chmod u+x /opt/spark/sbin/* && \
+    chmod u+x /opt/spark/bin/*
+
+ENV PYTHONPATH=$SPARK_HOME/python/:$PYTHONPATH
+
+
+# Define a volume
+VOLUME ["/opt/spark/"]
+
+# Create work directory 
+RUN mkdir /usr/hive-metastore
+RUN mkdir /usr/hive-metastore/spark-apps
+RUN mkdir /usr/hive-metastore/logs
+
+RUN chmod -R 777 /usr/hive-metastore
+
+WORKDIR /usr/hive-metastore
+
+# Entrypoint script - It should be declared after the WORKDIR instruction, while creating the container, entrypoint script will be executed from the Working Directory.
+COPY entrypoint.sh .
+
+ENTRYPOINT ["./entrypoint.sh"]
+
+# AWS_REGION environment variable will store region of minio
+ENV AWS_REGION="us-east-1" 
+# Minio username
+ENV AWS_ACCESS_KEY_ID="root"  
+# Minio password
+ENV AWS_SECRET_ACCESS_KEY="jerinminioserver"   

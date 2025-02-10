@@ -1,0 +1,22 @@
+# Minio Dockerfile
+FROM quay.io/minio/minio AS minio-base
+ 
+ENV MINIO_ROOT_USER="root" 
+ENV MINIO_ROOT_PASSWORD="jerinminioserver"
+ENV MINIO_REGION_NAME="us-east-1"
+ENV MINIO_REGION="us-east-1"
+ENV MINIO_DOMAIN="minio"
+ 
+RUN mkdir /usr/hive-metastore/
+RUN mkdir /usr/hive-metastore/minio
+
+RUN chmod -R 777 /usr/hive-metastore/
+
+WORKDIR /usr/hive-metastore/minio
+
+# Start Minio Server
+COPY entrypoint-minio.sh .
+
+ENTRYPOINT ["./entrypoint-minio.sh"]
+
+# CMD [ "tail","-f","/dev/null" ]

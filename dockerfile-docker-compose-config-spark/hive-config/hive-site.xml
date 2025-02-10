@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+   <property>
+      <name>javax.jdo.option.ConnectionURL</name>
+      <value>jdbc:postgresql://postgresdb:5432/hivemetastore?createDatabaseIfNotExist=true</value>
+      <description>JDBC connect string for a JDBC metastore</description>
+   </property>
+   <property>
+      <name>javax.jdo.option.ConnectionDriverName</name>
+      <value>org.postgresql.Driver</value>
+      <description>Driver class name for a JDBC metastore</description>
+   </property>
+   <property>
+      <name>javax.jdo.option.ConnectionUserName</name>
+      <value>jerin</value>
+      <description>Username to use against metastore database</description>
+   </property>
+   <property>
+      <name>javax.jdo.option.ConnectionPassword</name>
+      <value>jerinpostgresql</value>
+      <description>Password to use against metastore database</description>
+   </property>
+   <property>
+      <name>datanucleus.autoCreateSchema</name>
+      <value>True</value>
+   </property>
+   <property>
+      <name>datanucleus.fixedDatastore</name>
+      <value>True</value>
+   </property>
+   <property>
+      <name>datanucleus.autoCreateTables</name>
+      <value>True</value>
+   </property>
+   <property>
+      <name>hive.metastore.uris</name>
+      <value>thrift://0.0.0.0:9083</value>  <!-- Use the appropriate hostname/IP and port -->
+   </property>
+   <!-- Metastore Warehouse Location -->
+   <property>
+      <name>hive.metastore.warehouse.dir</name>
+      <value>s3a://hivebucket/delta-lake/data</value> <!-- Replace with your MinIO bucket -->
+   </property>
+   <!-- S3 Configuration -->
+   <property>
+      <name>fs.s3a.access.key</name>
+      <value>root</value>
+   </property>
+   <property>
+      <name>fs.s3a.secret.key</name>
+      <value>jerinminioserver</value>
+   </property>
+   <property>
+      <name>fs.s3a.endpoint</name>
+      <value>http://minio:9000</value> <!-- Replace with your MinIO endpoint -->
+   </property>
+   <property>
+      <name>fs.s3a.path.style.access</name>
+      <value>true</value>
+   </property>
+</configuration>
+
+  

@@ -1,0 +1,123 @@
+FROM python:3.11.11-bullseye AS hive-base
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      sudo \
+      curl \
+      vim \
+      unzip \
+      rsync \
+      openjdk-11-jdk \
+      build-essential \
+      software-properties-common \
+      ssh && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+
+
+## Download spark and hadoop dependencies and install
+
+# Optional env variables
+ENV HIVE_HOME=${HIVE_HOME:-"/opt/hive"} 
+ENV HADOOP_HOME=${HADOOP_HOME:-"/opt/hadoop"}
+ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+# Java is already installed from above step and added in PATH, however JAVA_HOME is not set which is required for hadoop 
+ENV JAVA_HOME=${JAVA_HOME:-"/usr/lib/jvm/java-11-openjdk-amd64"}
+
+RUN mkdir -p ${HADOOP_HOME} && mkdir -p ${HIVE_HOME}
+
+
+# Install Hive
+WORKDIR ${HIVE_HOME}
+
+RUN curl https://archive.apache.org/dist/hive/hive-2.3.9/apache-hive-2.3.9-bin.tar.gz -o apache-hive-2.3.9-bin.tar.gz \
+ && tar xvzf apache-hive-2.3.9-bin.tar.gz --directory /opt/hive --strip-components 1 \
+ && rm -rf apache-hive-2.3.9-bin.tar.gz
+
+
+######### Spark 3.5.4 supports Hive 2.3.9 by default and the latest version of Hive gives error during connection with hive external metastore.
+######### Due to above reason, following code is commented.
+
+# RUN curl https://dlcdn.apache.org/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz -o apache-hive-4.0.1-bin.tar.gz \
+#  && tar xvzf apache-hive-4.0.1-bin.tar.gz --directory /opt/hive --strip-components 1 \
+#  && rm -rf apache-hive-4.0.1-bin.tar.gz
+
+# Add Hive default configs, Postgres DB as external metastore and Minio as Object Storeage in Hive
+COPY ./hive-config/hive-site.xml "$HIVE_HOME/conf"
+
+
+# Add Hadoop Path as environment variable in Hive using hive-env.sh file
+COPY ./hive-config/hive-env.sh "$HIVE_HOME/conf"
+
+# Download Postgresql jar to connect postgres which will act as hive external metastore
+RUN curl https://jdbc.postgresql.org/download/postgresql-42.7.5.jar -o /opt/hive/lib/postgresql-42.7.5.jar
+
+
+# Install Hadoop
+WORKDIR ${HADOOP_HOME}
+
+RUN curl https://archive.apache.org/dist/hadoop/common/hadoop-3.3.4/hadoop-3.3.4.tar.gz -o hadoop-3.3.4.tar.gz \
+&& tar xvzf hadoop-3.3.4.tar.gz --directory /opt/hadoop --strip-components 1 \
+&& rm -rf hadoop-3.3.4.tar.gz
+
+
+# Install hadoop aws s3 dependencies for minio
+RUN curl https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar -o /opt/hive/lib/hadoop-aws-3.3.4.jar
+RUN curl https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.262/aws-java-sdk-bundle-1.12.262.jar -o /opt/hive/lib/aws-java-sdk-bundle-1.12.262.jar
+
+
+######### Spark 3.5.4 supports Hadoop 3.3.4 by default and the latest version of Hadoop gives error (Number conversion error) during connection with hive extername metastore.
+######### Due to above reason, following code is commented.
+
+# RUN curl https://dlcdn.apache.org/hadoop/common/hadoop-3.4.1/hadoop-3.4.1.tar.gz -o hadoop-3.4.1.tar.gz \
+# && tar xvzf hadoop-3.4.1.tar.gz --directory /opt/hadoop --strip-components 1 \
+# && rm -rf hadoop-3.4.1.tar.gz
+
+# # Install hadoop aws s3 dependencies for minio
+# RUN curl https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.4.1/hadoop-aws-3.4.1.jar -o /opt/hive/lib/hadoop-aws-3.4.1.jar
+# RUN curl https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.780/aws-java-sdk-bundle-1.12.780.jar -o /opt/hive/lib/aws-java-sdk-bundle-1.12.780.jar
+
+
+# Add Hadoop and Hive bin in Path
+ENV PATH="/opt/hadoop/bin:/opt/hadoop/sbin:/opt/hive/bin:/opt/hive/sbin:${PATH}"
+
+RUN chmod u+x /opt/hive/bin/* && \
+chmod u+x /opt/hadoop/bin/* 
+
+# Install python deps
+COPY ./requirements.txt .
+RUN pip3 install -r requirements.txt
+    
+# Define a volume
+VOLUME ["/opt/hive/"]
+
+# Create work directory 
+RUN mkdir /usr/hive-metastore
+RUN mkdir /usr/hive-metastore/spark-apps
+RUN mkdir /usr/hive-metastore/logs
+
+RUN chmod -R 777 /usr/hive-metastore
+
+WORKDIR /usr/hive-metastore
+
+# Entrypoint script - It should be declared after the WORKDIR instruction, while creating the container, entrypoint script will be executed from the Working Directory.
+COPY entrypoint-hivemetastore.sh .
+
+ENTRYPOINT ["./entrypoint-hivemetastore.sh"]
+
+
+
+##****************** Very Important to Connect to Minio using AWS S3 Bundle Jars *************** ##
+# Following Minio Environmental Variables are used by the nessie and AWS bundle jars to access Minio
+# These environment variables need to be created in the container from where Spark scripts will be fired. 
+# In this case Spark Master and Workers are used to execute the spark scripts and all the required jars including Unity Catalog and AWS S3 SDK jars are included in this container.
+# Since Minio is AWS S3 compatible and AWS S3 SDK jars are used to access it therefore AWS S3 environmental variables are used here.
+# and Unity Catalog access Minio through AWS S3 bundle jar which uses environment variables present in the docker container for region and credentials.
+
+# AWS_REGION environment variable will store region of minio
+ENV AWS_REGION="us-east-1" 
+# Minio username
+ENV AWS_ACCESS_KEY_ID="root"  
+# Minio password
+ENV AWS_SECRET_ACCESS_KEY="jerinminioserver"   

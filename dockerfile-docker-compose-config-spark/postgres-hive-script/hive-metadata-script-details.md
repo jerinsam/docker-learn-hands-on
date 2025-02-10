@@ -1,0 +1,1 @@
+##### Get this metadata sql script file for postgres from the Hive GitHub repository or from Hive tar file by extracting it and navigate to the location <HIVE_HOME/HIVE_EXTRACTION>/scripts/metastore/upgrade/postgres
