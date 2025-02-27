@@ -13,6 +13,18 @@ Think of it in this way, for installing DBT or Airflow, one will setup a server 
 
 Docker solves this problem by creating a separate and isolated environment for each service. This way, each service can have its own environment and can be installed independently without affecting other services. This is the main advantage of Docker.
 
+#### Difference between Virtual Machine and Docker -
+1. Virtual Machine (VM)
+    - A VM is a virtualized computing environment that runs on a physical machine using a hypervisor.
+    - Each VM has its own guest operating system, kernel, file system, and network stack.
+    - VMs are more resource-intensive than containers because they include an entire OS and require hardware-level virtualization. However, VMs provide strong isolation between applications since each VM is independent.
+
+2. Docker (Containers)
+    - Docker allows applications to be packaged into containers, which are lightweight and portable.
+    - Containers share the host OS kernel but maintain isolated user spaces.
+    - They do not require a separate OS, making them faster, more efficient, and less resource-intensive than VMs.
+    - Docker supports a wide range of programming languages and frameworks, making it highly versatile.
+
 Docker community is very large and there are many pre-built images available in Docker Hub or other image repository, which can be used to create a container. These images can be used to create production-ready containers. 
 
 Docker also provides a way to create custom images using ***Dockerfile***. Dockerfile is a text file that can be used to create a custom image. It contains a series of instructions that will be used to create a custom image. Dockerfile can be used to install packages, copy files, and set environment variables. 
