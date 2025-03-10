@@ -21,7 +21,7 @@ Docker solves this problem by creating a separate and isolated environment for e
 
 2. Docker (Containers)
     - Docker allows applications to be packaged into containers, which are lightweight and portable.
-    - Containers share the host OS kernel but maintain isolated user spaces.
+    - Containers share the host OS kernel (Kernel is the core component of the OS that directly interacts with the hardware) i.e. Docker Engine uses the host OS kernel to run containers but maintain isolated user spaces, including the file system, network, and process namespaces.
     - They do not require a separate OS, making them faster, more efficient, and less resource-intensive than VMs.
     - Docker supports a wide range of programming languages and frameworks, making it highly versatile.
 
