@@ -14,9 +14,9 @@ services:
       timeout: 3s
       retries: 3
     volumes:
-      # - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/data:/usr/hive-metastore/data"
-      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/logs:/usr/hive-metastore/logs"
-      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
+      # - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/data:/usr/hive-metastore/data"
+      - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/logs:/usr/hive-metastore/logs"
+      - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
       - "spark-logs:/opt/spark/spark-events"
     env_file:
       - ./spark-config/.env.spark
@@ -51,8 +51,8 @@ services:
     env_file:
       - ./spark-config/.env.spark
     volumes:
-      # - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/data:/usr/hive-metastore/data"
-      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
+      # - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/data:/usr/hive-metastore/data"
+      - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
       - "spark-logs:/opt/spark/spark-events"
     networks:
       hivemetastore:
@@ -67,9 +67,9 @@ services:
       - "9000:9000"
       - "9001:9001" 
     volumes:
-      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/data:/usr/hive-metastore/data"
-      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
-      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/logs:/usr/hive-metastore/logs" 
+      - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/data:/usr/hive-metastore/data"
+      - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
+      - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/logs:/usr/hive-metastore/logs" 
     networks:
       hivemetastore:
   
@@ -103,8 +103,8 @@ services:
       dockerfile: Dockerfile.hivemetastore
     image: hive-metastore-image
     volumes:
-      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
-      - "/mnt/c/Users/jerin/OneDrive\ -\ Aligned\ Automation/Work/Learn/Tech Solutions/integration-spark-catalog-lakehouse/spark-working-folder/logs:/usr/hive-metastore/logs"
+      - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/spark_apps:/usr/hive-metastore/spark-apps"
+      - "/mnt/c/Users/jerin/OneDrive - Aligned Automation/Work/Learn/Tech Solutions/docker-learn-hands-on/dockerfile-docker-compose-config-spark/spark-working-folder/logs:/usr/hive-metastore/logs"
     ports:
       - '9083:9083' # Hive metastore thrift server port
     depends_on:

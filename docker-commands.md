@@ -1,29 +1,58 @@
 # **Docker Commands Reference**
 
-## **1. Build a Docker Image**
-```sh
-docker build -t unity-catalog-image -f ./Dockerfile.unitycatalog .
-```
-- Builds a Docker image named `unity-catalog-image` using the specified `Dockerfile.unitycatalog`.
-- `-t` tags the image with a name.
-- `-f` specifies the Dockerfile to use.
-- `.` specifies build context i.e. which is the directory Docker will use to locate files
 
----
-
-## **2. Docker Process Management**
-
-### **Show Help for `docker ps`**
+## **0. Show Help**
 ```sh
 docker ps --help
 ```
 - Displays help information for the `docker ps` command.
+- `--help` flag is used to display help information for the command.
+
+---
+
+## **1. Build a Docker Image**
+
+### **Build Docker Image**
+```sh
+docker build -t unity-catalog-image -f ./Dockerfile.unitycatalog .
+```
+- Builds a Docker image named `unity-catalog-image` using the specified Dockerfile (`./Dockerfile.unitycatalog`) in the current directory (`.`).
+    - `-t` tags the image with a name.
+    - `-f` specifies the Dockerfile to use.
+    - `.` specifies build context i.e. which is the directory Docker will use to locate files
+
+### **Start Docker Container**
+```sh
+docker run -p 8080:8080 -v /mnt/c/host/path:/usr/container/path --name dbt-learn-hands-on dbt_learn_image
+```
+- Runs a Docker container named `dbt-learn-hands-on` using the image `dbt_learn_image`.
+    - `-p 8080:8080` maps port 8080 on the host to port 8080 inside the container.
+    - `-v /mnt/c/host/path:/usr/container/path` mounts a volume, linking the host path `/mnt/c/host/path` to the container path `/usr/container/path`.
+    - `--name dbt-learn-hands-on` assigns a custom name to the running container.
+    - `dbt_learn_image` specifies the image to use for running the container.
+
+---
+
+## **2. Docker Process Management**
 
 ### **List Running Containers**
 ```sh
 docker ps
 ```
 - Shows currently running containers.
+
+### **Inspect Images**
+```sh
+docker inspect dbt_learn_image
+```
+- Displays detailed information about the `dbt_learn_image` image like its configuration, history, and more.
+
+### **Inspect Containers**
+```sh
+docker inspect dbt-learn-hands-on
+```
+- Shows information about the container `dbt-learn-hands-on` like its IP address, port mappings, and more.
+
 
 ---
 
@@ -88,6 +117,13 @@ docker image rm dbt-learn-hands-on
 ```
 - Deletes the `dbt-learn-hands-on` image.
 
+
+### **Force Remove All Docker Images**
+```sh
+docker image rm -f $(docker image ls -aq)
+```
+- Force removes all images forcefully.
+
 ---
 
 ## **6. Docker Container Management**
@@ -133,12 +169,6 @@ docker container rm $(docker ps -aq)
 docker container rm -f $(docker container ls -aq)
 ```
 - Force removes all containers, including running ones.
-
-### **Force Remove All Docker Images**
-```sh
-docker image rm -f $(docker image ls -aq)
-```
-- Deletes all images forcefully.
 
 ---
 

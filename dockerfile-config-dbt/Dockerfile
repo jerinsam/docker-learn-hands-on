@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y unixodbc-dev && \
 # Define a volume
 VOLUME ["/usr/local/app/dbt-working-folder"]
 
+# Expose a port
+EXPOSE 8080
+
 # Keep the container running
 CMD ["tail", "-f", "/dev/null"]
  

@@ -20,7 +20,12 @@ It is a text file that contains instructions for building a Docker image. It is 
     - **`CMD`** - specifies the default command to run when the container is started. Script mentioned in this command can be overridden while running the container. 
     - **`Volume`** - specify the container path which will be mapped to the host machine path. In this case, the /usr/local/app directory is used.
     - **`Entrypoint`** - specifies the main command that will always run when a container starts. CMD and ENTRYPOINT can be used together where ENTRYPOINT will have fixed script and CMD will provide arguments to that Entrypoint script. If Entrypoint is not defined then default script present in CMD will be executed.
+    - **`EXPOSE`** - Specifies the port that the container listens on. *It is not used in the Dockerfiles present in this folder.* 
+      - **Note** - `EXPOSE 8080` in the Dockerfile is optional. It documents that a process in the container will expose this port. But its required to actually expose the port with `-p` when running docker run. So, it is a best practice to also add EXPOSE in the Dockerfile to document this behavior.
+  
+  Each set of instructions in the Dockerfile is called a **Layer**. These layers are cached and will only be re-evaluted if the instruction changes. This makes the build process much faster. Creating a container from an image is also a layer.
 
+  <img src="./readme-artifacts/layers.JPG" alt="dockerhub" width="600"/>
 
 - **Difference between Entrypoint and CMD**
 
