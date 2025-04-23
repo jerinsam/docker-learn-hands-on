@@ -80,7 +80,7 @@ docker compose build --no-cache && docker compose up -d --force-recreate
 
 ---
 
-## **4. Stopping and Removing Containers**
+## **4. Stopping Containers**
 
 ### **Stop a Running Container**
 ```sh
@@ -193,5 +193,44 @@ docker cp <host-path> <container-name-or-id>:<container-destination-path>
 docker cp <container-name-or-id>:<container-source-path> <host-destination-path>
 ```
 - Copies files from a container to the host system.
+
+---
+
+
+## **9. Docker Container Management**
+
+### **List all Volumes**
+```sh
+docker volume ls
+```
+- List all Docker Volumes.
+
+
+### **Delete specific volume**
+```sh
+docker volume rm <volume_name>
+```
+- Delete specific docker volume.
+
+
+### **Remove all Docker Volumes**
+```sh
+docker volume rm $(docker volume ls -q)
+```
+- Removes all the volumes.
+
+
+### **Delete all unused volumes**
+```sh
+docker volume prune
+```
+- Delete all unused volumes.
+
+
+### **Force delete all unused volumes**
+```sh
+docker volume prune -f
+```
+- Force delete all unused volumes.
 
 ---
