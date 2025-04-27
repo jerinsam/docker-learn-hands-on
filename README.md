@@ -61,10 +61,18 @@ Pre-built docker images used in the Dockerfile and Docker Compose example files 
 1. Dockerfile 
 2. Docker Compose 
 3. Docker Commands via CLI
+4. Publish Docker Image to image repository
 
 ### **How to navigate through this Repo -**
 1. Read this readme file, to understand the theory of docker.
-2. Navigate to **`./dockerfile-config-dbt/README.md`**: This will help to understand basics of Dockerfile and how to build/ create image and start the container and directory **`./dockerfile-config-dbt/`** will contain all the files related to Dockerfile.
-3. Navigate to **`./dockerfile-docker-compose-config-spark/README.md`**: This will help to understand basics of Dockerfile and Docker Compose and how to orchestrate multi container docker service and directory **`./dockerfile-docker-compose-config-spark/`** will contain all the files related to Dockerfile, Docker Compose and necessary Docker Commands.
-4. Navigate to **`./docker-commands.md`**: This will help to understand common docker commands to build and manage the containers.
+2. Navigate to **`./dockerfile-config-dbt/README.md`**: 
+    - This will help to understand basics of Dockerfile and how to build/ create image and start the container.
+    - Directory **`./dockerfile-config-dbt/`** will contain all the files related to Dockerfile. 
+    - This will also help get details on volume, network and other docker concepts.
+3. Navigate to **`./dockerfile-docker-compose-config-spark/README.md`**: 
+    - This will help to understand basics of Dockerfile and Docker Compose and how to orchestrate multi container docker service.
+    - Directory **`./dockerfile-docker-compose-config-spark/`** will contain all the files related to Dockerfile, Docker Compose.
+    - This will also help get details on volume, network, and other docker concepts.
+4. Navigate to **`./docker-commands.md`**: 
+    - This will help to understand common docker commands to build and manage the containers, images and how to publish the images to Docker Hub or other registries.
 
