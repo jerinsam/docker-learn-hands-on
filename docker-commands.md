@@ -42,7 +42,7 @@ docker build -t unity-catalog-image:latest -f ./Dockerfile.unitycatalog .
 
 ### **Create and Start Docker Container**
 ```sh
-docker run -p 8080:8080 -v /mnt/c/host/path:/usr/container/path -d --rm --name dbt-learn-hands-on dbt_learn_image
+docker run -p 8080:8080 -v /mnt/c/host/path:/usr/container/path -d --rm --network <network-name> --name dbt-learn-hands-on dbt_learn_image
 ```
 - Runs a Docker container named `dbt-learn-hands-on` using the image `dbt_learn_image`.
     - `-p 8080:8080` maps port 8080 on the host to port 8080 inside the container.
@@ -51,7 +51,8 @@ docker run -p 8080:8080 -v /mnt/c/host/path:/usr/container/path -d --rm --name d
     - `dbt_learn_image` specifies the image to use for running the container.
     - `-d` runs the container in detached mode (in the background), allowing to continue using the terminal. Executing the command without `-d` will run the container in the foreground, blocking the terminal until the container stops.
     - `--rm` automatically removes the container when the container is stopped or exits.
-    - 
+    - `--network <network-name>` specifies the network to which the container will be connected. Details of Docker Network can be found in below section.
+    
 ### **Start a existing Docker Container**
 ```sh
 docker start dbt-learn-hands-on
