@@ -28,8 +28,6 @@ There are many docker deployment providers available. Some of the most popular o
 - End user will access the application via the host machine's IP address and port.
 <br>
 
-![dockerhub](./readme-artifacts/docker-image-dockerhub.JPG)
-
 ![docker-single-container-deployment](./readme-artifacts/docker-single-container-deployment.JPG)
 
 
