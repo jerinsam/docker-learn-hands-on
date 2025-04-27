@@ -21,7 +21,7 @@ There are many docker deployment providers available. Some of the most popular o
 - Google - https://cloud.google.com/containers
 - Azure - https://azure.microsoft.com/en-us/products/category/containers
 
-#### Standalone Docker Container deployment steps
+### Standalone Docker Container deployment steps
 - Install Docker on the remote host machine (via SSH).
 - Push and pull image to and from container repository (e.g., Docker Hub).
 - Run the container on the remote host machine using SSH.
@@ -31,7 +31,7 @@ There are many docker deployment providers available. Some of the most popular o
 
 
 
-#### Manual Deployment Steps
+### Manual Deployment Steps
 - Get a VM service from a cloud provider (e.g., AWS, Azure, Google).
 - SSH into the VM and install Docker.
     - https://docs.docker.com/engine/install/  
@@ -64,4 +64,4 @@ There are many docker deployment providers available. Some of the most popular o
 
 
 
-#### Managed Services - Creation, Management and Updating is handled automatically
+### Managed Services - Creation, Management and Updating is handled automatically
