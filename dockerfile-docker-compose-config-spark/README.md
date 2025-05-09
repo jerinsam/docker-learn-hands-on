@@ -255,7 +255,7 @@ services:
   | `entrypoint`    | Defines the main command to execute inside the container |  
   | `healthcheck`   | Monitors the container’s health status |  
   | `volumes`       | Mounts host directories or named volumes into the container |  
-  | `env_file`      | Loads environment variables from an external file |  
+  | `env_file`      | Loads environment variables to container from an external file |  
   | `ports`         | Maps container ports to host ports |  
   | `networks`      | Connects the service to a specific Docker network |  
 

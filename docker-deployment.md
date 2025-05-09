@@ -30,9 +30,11 @@ There are many docker deployment providers available. Some of the most popular o
 
 ![docker-single-container-deployment](./readme-artifacts/docker-single-container-deployment.JPG)
 
-
-
+## Deployment Methods
 ### Manual Deployment Steps
+In Manual Deployment Steps, the user has to manage the VM and the container. Its a bit tedious and time consuming. The user has to manage the VM, the container, the network, the security, the logging, the monitoring, the scaling, the resource limits, the IAM roles and permissions, the load balancer, the DNS, the storage and backup options, and the deployment and rollback options. The user has to manage everything manually.
+
+#### Steps
 - Get a VM service from a cloud provider (e.g., AWS, Azure, Google).
 - SSH into the VM and install Docker.
     - https://docs.docker.com/engine/install/  
@@ -65,4 +67,38 @@ There are many docker deployment providers available. Some of the most popular o
 
 
 
-### Managed Services - Creation, Management and Updating is handled automatically
+### Managed Container Services Deployment
+**Managed Container Services** - 
+    - Creation, management and updating is handled automatically.
+    - No need to manage the VM or the container.
+    - Load balancing, scaling, resource limits, IAM roles and permissions, logging, monitoring, health checks, restart policy, network options, security options, storage options and backup options are handled automatically. 
+    - End user will only have to manage the image and the container repository. 
+
+#### Steps
+- Identify the managed container service from the cloud provider like AWS, Azure or Google.
+- Build the image in local and push the image to a container repository.
+    - *Docker commands for building the image in local and pushing it to a container repository can be found here in ./docker-commands.md file*
+- Create a managed container service in the cloud and follow the steps to deploy the image.
+    - Mention the container repository URL and the image name.
+        - *Follow documentation for multi container deployment if required.*
+    - Specify the ports to be exposed and the environment variables to be set.
+    - To persists the data in Container - 
+        - In Local, Persisting the data after container is stopped is handled using bind mounts.
+        - In Cloud, This needs to be handled using cloud storage options like AWS S3, Azure Blob Storage, Google Cloud Storage, etc.
+        - *Note - The data will be persisted in the cloud storage and not in the container. The container will be stopped and started again with the new image. The data will be available in the cloud storage and can be accessed from the container.*
+    - Specify the command to run the container and the entry point to be used.
+    - Managing the container versioning, while updating the image.
+    - Manage container internal communication.
+        - *Note - Internal Container communications is generally handled differently in local and in cloud.*
+        - *For example, In local, communication between containers is handled using container name followed by the port number like "spark://spark-master:7077" however In cloud, Its handled differently, read the documentation of the managed container service for more details, for example in AWS Managed container service, the communication is handled like "spark://localhost:7077"*
+        - *Due to this, If the code which executes in the docker container and if the code communicates between different containers then the connection need to be modified. For Example, the spark entrypoint file used in this tutorial (Path - ./dockerfile-docker-compose-config-spark/entrypoint.sh ) needs to be updated by changing master node connection method from "spark://spark-master:7077" to "spark://localhost:7077"*
+    - Specify the backup options.
+    - Specify the scaling options and the resource limits.
+    - Specify the network options and the security options.
+    - Specify the logging and monitoring options.
+    - Specify the health check options and the restart policy. 
+    - Specify the load balancer options and the DNS options.
+    - Specify the deployment options and the rollback options. 
+- Ensure the container is running and accessible via the managed service's IP address and port.
+- End user will access the application via the managed service's IP address and port.
+
