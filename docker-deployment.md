@@ -102,3 +102,13 @@ In Manual Deployment Steps, the user has to manage the VM and the container. Its
 - Ensure the container is running and accessible via the managed service's IP address and port.
 - End user will access the application via the managed service's IP address and port.
 
+## Best Practices
+- Use Multi stage build in Dockerfile to reduce the image size.
+- Check vulnerabilities in the image before deploying it.
+- Use a container repository to store the images.
+- Use a managed container service to deploy the images.
+- Use a cloud storage option to persist and backup the data.
+- Use a logging and monitoring service to monitor the container.
+- Use a health check and restart policy to ensure the container is running.
+- Use a load balancer to distribute the traffic.
+- Use a DNS service to manage the domain name.

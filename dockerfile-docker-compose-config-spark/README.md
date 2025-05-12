@@ -296,3 +296,36 @@ Following are the widely used docker commands, for more details refer docker-com
   - Host machine can access services running inside a container using the mapped ports. For example, if a web server is running inside a container and port `80` is mapped to port `8080` on the host, then the web server can be accessed from the host using `http://localhost:8080`.
   - If the container is running in a custom network, then the host can access the container using the container's IP address and the mapped port.
 
+#### Docker Multi Stage Build
+A multi-stage build in Docker is a technique that uses multiple `FROM` statements in a Dockerfile to create separate build stages, optimizing the final container image by reducing its size and complexity. Each stage starts with a base image, and only the necessary artifacts are copied from one stage to another, discarding intermediate build dependencies and files.
+
+##### How It Works:
+1. **Multiple Stages**: Each `FROM` statement begins a new stage, which can have its own base image and instructions (e.g., installing dependencies, compiling code).
+2. **Copying Artifacts**: The `COPY --from=<stage>` instruction allows you to copy specific files or directories from a previous stage into the current one.
+3. **Final Stage**: The last stage typically contains only the runtime environment and the compiled application, resulting in a leaner image.
+
+##### Example:
+```dockerfile
+# Stage 1: Build Stage
+FROM golang:1.21 AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o myapp
+
+# Stage 2: Runtime Stage
+FROM alpine:3.18
+WORKDIR /app
+# Copy files from the builder stage path /app/myapp to the current stage working directory 
+COPY --from=builder /app/myapp .  
+CMD ["./myapp"]
+```
+
+##### Benefits:
+- **Smaller Images**: Excludes build tools and intermediate files from the final image (e.g., in the example, the Go compiler is not included in the Alpine-based final image).
+- **Improved Security**: Reduces attack surface by minimizing unnecessary software in the runtime image.
+- **Faster Builds**: Caches intermediate stages, speeding up subsequent builds if earlier stages are unchanged.
+- **Separation of Concerns**: Clearly separates build and runtime environments.
+
+##### Key Points:
+- Each stage can be referenced by its index (e.g., `--from=0`) or an alias (e.g., `--from=builder`).
+- Only the last stage is included in the final image unless you target a specific stage with `docker build --target <stage>`. 

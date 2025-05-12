@@ -87,7 +87,11 @@ When using both ENTRYPOINT and CMD, the ENTRYPOINT is used as the main command a
       - **--rm**: This flag is used to automatically remove the container when it is stopped 
       - **-v "<host/folder : docker/folder>"**: This flag is used to mount a volume from the host machine to the container. This allows the container to access files from the host folder and vice versa. This same method is also used to map the named volume to the host machine. 
           - **Note** - The path of the host folder should be in the format `/mnt/c/path/to/folder` when using WSL (Windows Subsystem for Linux). This is because WSL uses a different file system structure than Windows.                 
-      - **-p <docker_port>:<host_port>**: This flag is used to map a port from the host machine to the container. This allows the container machine to be accessed from the host machine.
+      - **-p <docker_port>:<host_port>**: This flag is used to map a port from the host machine to the container. This allows the container machine to be accessed from the host machine. Follow Appendix section to understand the network access scenarios.
+          - **<docker_port>**: This is the port number that the container will listen on
+          - **<host_port>**: This is the port number on the host machine that will be mapped to the container port
+          - **Example**: `-p 8080:3030` maps port 8080 on the host machine to port 3030 in the container. 
+            - This means that if a web server is running inside the container on port 3030, it can be accessed from the host machine using `http://localhost:8080`.
       - **--name <container-name>**: This flag is used to specify the name of the container
       - **<image_name>** : This is the name of the Docker image created in the previous step
     
@@ -99,6 +103,7 @@ When using both ENTRYPOINT and CMD, the ENTRYPOINT is used as the main command a
       docker run -p 8080:8080 -v /mnt/c/host/path:/usr/container/path --name dbt-learn-hands-on dbt_learn_image
       
       ``` 
+      
   - Start the shell of running container in Host machine using the following command
       ```sh
       # Get the container name or id by executing
@@ -168,3 +173,61 @@ When using both ENTRYPOINT and CMD, the ENTRYPOINT is used as the main command a
           # This will create a read-only volume in the container at /container/path
           ```
         - The `:ro` flag is used to specify that the volume should be mounted as read-only. This means that the container can read files from the volume, but cannot write to it. This is useful for scenarios where you want to share data with a container without allowing it to modify the data.
+
+
+### Appendix
+#### Docker Network Access Scenarios
+- **Container to WWW (Internet) Access**
+  - By default, containers are connected to the `bridge` network, which provides access to the internet through the host machine. Containers can access external resources such as websites, APIs, and databases on the public internet.
+
+- **Container to Host Access**
+  - Containers can access the host machine using the special hostname `host.docker.internal`. This allows containers to communicate with services running on the host, such as databases, application servers, or APIs.
+  - Example: If a web service is running on the host machine, then it can be accessed from within a container using `http://host.docker.internal:<host_port>`.
+
+- **Container to Container Access**
+  - Containers within the same Docker network can communicate with each other using their container names or IP addresses.
+  - If containers are in the same user-defined network (such as a `bridge`, `overlay`, or `host` network), they can resolve each other by container name, e.g., `spark://spark-master:7077`.
+  - If not in the same network, then containers can be accessed using their IP address, which can be found by running the `docker inspect <container_name>` command.
+  - If needed, Networks can be created using the `docker network create <network_name>` command. This will create a custom network that can be used to connect multiple containers. These connected containers can communicate with each other using their container names. e.g. `spark://spark-master:7077`
+   
+- **Container to Host Port Access**
+  - If a container needs to communicate with a specific port on the host, container ports can be mapped to host ports using the `-p` option when running the container, such as `docker run -p 8080:80` or in the Docker Compose file using the `ports` section.
+  - This provides access to services within the container from outside the container through the mapped port on the host.
+
+- **Host to Container Access**
+  - Host machine can access services running inside a container using the mapped ports. For example, if a web server is running inside a container and port `80` is mapped to port `8080` on the host, then the web server can be accessed from the host using `http://localhost:8080`.
+  - If the container is running in a custom network, then the host can access the container using the container's IP address and the mapped port.
+
+#### Docker Multi Stage Build
+A multi-stage build in Docker is a technique that uses multiple `FROM` statements in a Dockerfile to create separate build stages, optimizing the final container image by reducing its size and complexity. Each stage starts with a base image, and only the necessary artifacts are copied from one stage to another, discarding intermediate build dependencies and files.
+
+##### How It Works:
+1. **Multiple Stages**: Each `FROM` statement begins a new stage, which can have its own base image and instructions (e.g., installing dependencies, compiling code).
+2. **Copying Artifacts**: The `COPY --from=<stage>` instruction allows you to copy specific files or directories from a previous stage into the current one.
+3. **Final Stage**: The last stage typically contains only the runtime environment and the compiled application, resulting in a leaner image.
+
+##### Example:
+```dockerfile
+# Stage 1: Build Stage
+FROM golang:1.21 AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o myapp
+
+# Stage 2: Runtime Stage
+FROM alpine:3.18
+WORKDIR /app
+# Copy files from the builder stage path /app/myapp to the current stage working directory 
+COPY --from=builder /app/myapp .  
+CMD ["./myapp"]
+```
+
+##### Benefits:
+- **Smaller Images**: Excludes build tools and intermediate files from the final image (e.g., in the example, the Go compiler is not included in the Alpine-based final image).
+- **Improved Security**: Reduces attack surface by minimizing unnecessary software in the runtime image.
+- **Faster Builds**: Caches intermediate stages, speeding up subsequent builds if earlier stages are unchanged.
+- **Separation of Concerns**: Clearly separates build and runtime environments.
+
+##### Key Points:
+- Each stage can be referenced by its index (e.g., `--from=0`) or an alias (e.g., `--from=builder`).
+- Only the last stage is included in the final image unless you target a specific stage with `docker build --target <stage>`. 

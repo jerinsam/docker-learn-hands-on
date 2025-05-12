@@ -75,4 +75,5 @@ Pre-built docker images used in the Dockerfile and Docker Compose example files 
     - This will also help get details on volume, network, and other docker concepts.
 4. Navigate to **`./docker-commands.md`**: 
     - This will help to understand common docker commands to build and manage the containers, images and how to publish the images to Docker Hub or other registries.
-
+5. Navigate to **`./docker-deployment.md`**: 
+    - This will help to understand deployment methodologies for Docker containers.
