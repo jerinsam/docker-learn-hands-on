@@ -112,3 +112,10 @@ In Manual Deployment Steps, the user has to manage the VM and the container. Its
 - Use a health check and restart policy to ensure the container is running.
 - Use a load balancer to distribute the traffic.
 - Use a DNS service to manage the domain name.
+
+## Kubernetes Deployment
+Kubernetes is one of the main component in the container deployment. It is a container orchestration tool that automates the deployment, scaling, and management of containerized applications.
+
+It is used to manage the deployment of multiple containers across multiple hosts. It provides features like load balancing, scaling, resource limits, IAM roles and permissions, logging, monitoring, health checks, restart policy, network options, security options, storage options and backup options. It is a powerful tool for managing containerized applications in production.
+
+Follow "kubernetes-learn-hands-on" repository for more details on Kubernetes.
